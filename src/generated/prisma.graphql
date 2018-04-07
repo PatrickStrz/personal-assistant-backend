@@ -5,6 +5,13 @@
 # Model Types
 #
 
+type Entry implements Node {
+  id: ID!
+  text: String!
+  author(where: UserWhereInput): User
+  status: EntryStatus
+}
+
 type Post implements Node {
   id: ID!
   createdAt: DateTime!
@@ -21,12 +28,17 @@ type User implements Node {
   password: String!
   name: String!
   posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post!]
+  entries(where: EntryWhereInput, orderBy: EntryOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Entry!]
 }
 
 
 #
 # Other Types
 #
+
+type AggregateEntry {
+  count: Int!
+}
 
 type AggregatePost {
   count: Int!
@@ -46,24 +58,297 @@ type BatchPayload {
 scalar DateTime
 
 """
+A connection to a list of items.
+"""
+type EntryConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  """
+  A list of edges.
+  """
+  edges: [EntryEdge]!
+  aggregate: AggregateEntry!
+}
+
+input EntryCreateInput {
+  text: String!
+  status: EntryStatus
+  author: UserCreateOneInput
+}
+
+input EntryCreateManyInput {
+  create: [EntryCreateInput!]
+  connect: [EntryWhereUniqueInput!]
+}
+
+"""
+An edge in a connection.
+"""
+type EntryEdge {
+  """
+  The item at the end of the edge.
+  """
+  node: Entry!
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+}
+
+enum EntryOrderByInput {
+  id_ASC
+  id_DESC
+  text_ASC
+  text_DESC
+  status_ASC
+  status_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type EntryPreviousValues {
+  id: ID!
+  text: String!
+  status: EntryStatus
+}
+
+enum EntryStatus {
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+type EntrySubscriptionPayload {
+  mutation: MutationType!
+  node: Entry
+  updatedFields: [String!]
+  previousValues: EntryPreviousValues
+}
+
+input EntrySubscriptionWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [EntrySubscriptionWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [EntrySubscriptionWhereInput!]
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: EntryWhereInput
+}
+
+input EntryUpdateDataInput {
+  text: String
+  status: EntryStatus
+  author: UserUpdateOneInput
+}
+
+input EntryUpdateInput {
+  text: String
+  status: EntryStatus
+  author: UserUpdateOneInput
+}
+
+input EntryUpdateManyInput {
+  create: [EntryCreateInput!]
+  connect: [EntryWhereUniqueInput!]
+  disconnect: [EntryWhereUniqueInput!]
+  delete: [EntryWhereUniqueInput!]
+  update: [EntryUpdateWithWhereUniqueNestedInput!]
+  upsert: [EntryUpsertWithWhereUniqueNestedInput!]
+}
+
+input EntryUpdateWithWhereUniqueNestedInput {
+  where: EntryWhereUniqueInput!
+  data: EntryUpdateDataInput!
+}
+
+input EntryUpsertWithWhereUniqueNestedInput {
+  where: EntryWhereUniqueInput!
+  update: EntryUpdateDataInput!
+  create: EntryCreateInput!
+}
+
+input EntryWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [EntryWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [EntryWhereInput!]
+  id: ID
+  """
+  All values that are not equal to given value.
+  """
+  id_not: ID
+  """
+  All values that are contained in given list.
+  """
+  id_in: [ID!]
+  """
+  All values that are not contained in given list.
+  """
+  id_not_in: [ID!]
+  """
+  All values less than the given value.
+  """
+  id_lt: ID
+  """
+  All values less than or equal the given value.
+  """
+  id_lte: ID
+  """
+  All values greater than the given value.
+  """
+  id_gt: ID
+  """
+  All values greater than or equal the given value.
+  """
+  id_gte: ID
+  """
+  All values containing the given string.
+  """
+  id_contains: ID
+  """
+  All values not containing the given string.
+  """
+  id_not_contains: ID
+  """
+  All values starting with the given string.
+  """
+  id_starts_with: ID
+  """
+  All values not starting with the given string.
+  """
+  id_not_starts_with: ID
+  """
+  All values ending with the given string.
+  """
+  id_ends_with: ID
+  """
+  All values not ending with the given string.
+  """
+  id_not_ends_with: ID
+  text: String
+  """
+  All values that are not equal to given value.
+  """
+  text_not: String
+  """
+  All values that are contained in given list.
+  """
+  text_in: [String!]
+  """
+  All values that are not contained in given list.
+  """
+  text_not_in: [String!]
+  """
+  All values less than the given value.
+  """
+  text_lt: String
+  """
+  All values less than or equal the given value.
+  """
+  text_lte: String
+  """
+  All values greater than the given value.
+  """
+  text_gt: String
+  """
+  All values greater than or equal the given value.
+  """
+  text_gte: String
+  """
+  All values containing the given string.
+  """
+  text_contains: String
+  """
+  All values not containing the given string.
+  """
+  text_not_contains: String
+  """
+  All values starting with the given string.
+  """
+  text_starts_with: String
+  """
+  All values not starting with the given string.
+  """
+  text_not_starts_with: String
+  """
+  All values ending with the given string.
+  """
+  text_ends_with: String
+  """
+  All values not ending with the given string.
+  """
+  text_not_ends_with: String
+  status: EntryStatus
+  """
+  All values that are not equal to given value.
+  """
+  status_not: EntryStatus
+  """
+  All values that are contained in given list.
+  """
+  status_in: [EntryStatus!]
+  """
+  All values that are not contained in given list.
+  """
+  status_not_in: [EntryStatus!]
+  author: UserWhereInput
+}
+
+input EntryWhereUniqueInput {
+  id: ID
+}
+
+"""
 The `Long` scalar type represents non-fractional signed whole numeric values.
 Long can represent values between -(2^63) and 2^63 - 1.
 """
 scalar Long
 
 type Mutation {
-  createPost(data: PostCreateInput!): Post!
   createUser(data: UserCreateInput!): User!
-  updatePost(data: PostUpdateInput!, where: PostWhereUniqueInput!): Post
+  createPost(data: PostCreateInput!): Post!
+  createEntry(data: EntryCreateInput!): Entry!
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
-  deletePost(where: PostWhereUniqueInput!): Post
+  updatePost(data: PostUpdateInput!, where: PostWhereUniqueInput!): Post
+  updateEntry(data: EntryUpdateInput!, where: EntryWhereUniqueInput!): Entry
   deleteUser(where: UserWhereUniqueInput!): User
-  upsertPost(where: PostWhereUniqueInput!, create: PostCreateInput!, update: PostUpdateInput!): Post!
+  deletePost(where: PostWhereUniqueInput!): Post
+  deleteEntry(where: EntryWhereUniqueInput!): Entry
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
-  updateManyPosts(data: PostUpdateInput!, where: PostWhereInput!): BatchPayload!
+  upsertPost(where: PostWhereUniqueInput!, create: PostCreateInput!, update: PostUpdateInput!): Post!
+  upsertEntry(where: EntryWhereUniqueInput!, create: EntryCreateInput!, update: EntryUpdateInput!): Entry!
   updateManyUsers(data: UserUpdateInput!, where: UserWhereInput!): BatchPayload!
-  deleteManyPosts(where: PostWhereInput!): BatchPayload!
+  updateManyPosts(data: PostUpdateInput!, where: PostWhereInput!): BatchPayload!
+  updateManyEntries(data: EntryUpdateInput!, where: EntryWhereInput!): BatchPayload!
   deleteManyUsers(where: UserWhereInput!): BatchPayload!
+  deleteManyPosts(where: PostWhereInput!): BatchPayload!
+  deleteManyEntries(where: EntryWhereInput!): BatchPayload!
 }
 
 enum MutationType {
@@ -482,12 +767,15 @@ input PostWhereUniqueInput {
 }
 
 type Query {
-  posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post]!
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
-  post(where: PostWhereUniqueInput!): Post
+  posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post]!
+  entries(where: EntryWhereInput, orderBy: EntryOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Entry]!
   user(where: UserWhereUniqueInput!): User
-  postsConnection(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PostConnection!
+  post(where: PostWhereUniqueInput!): Post
+  entry(where: EntryWhereUniqueInput!): Entry
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
+  postsConnection(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PostConnection!
+  entriesConnection(where: EntryWhereInput, orderBy: EntryOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): EntryConnection!
   """
   Fetches an object given its ID
   """
@@ -498,8 +786,9 @@ type Query {
 }
 
 type Subscription {
-  post(where: PostSubscriptionWhereInput): PostSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  post(where: PostSubscriptionWhereInput): PostSubscriptionPayload
+  entry(where: EntrySubscriptionWhereInput): EntrySubscriptionPayload
 }
 
 """
@@ -522,6 +811,12 @@ input UserCreateInput {
   password: String!
   name: String!
   posts: PostCreateManyWithoutAuthorInput
+  entries: EntryCreateManyInput
+}
+
+input UserCreateOneInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
 }
 
 input UserCreateOneWithoutPostsInput {
@@ -533,6 +828,7 @@ input UserCreateWithoutPostsInput {
   email: String!
   password: String!
   name: String!
+  entries: EntryCreateManyInput
 }
 
 """
@@ -606,11 +902,29 @@ input UserSubscriptionWhereInput {
   node: UserWhereInput
 }
 
+input UserUpdateDataInput {
+  email: String
+  password: String
+  name: String
+  posts: PostUpdateManyWithoutAuthorInput
+  entries: EntryUpdateManyInput
+}
+
 input UserUpdateInput {
   email: String
   password: String
   name: String
   posts: PostUpdateManyWithoutAuthorInput
+  entries: EntryUpdateManyInput
+}
+
+input UserUpdateOneInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: UserUpdateDataInput
+  upsert: UserUpsertNestedInput
 }
 
 input UserUpdateOneWithoutPostsInput {
@@ -625,6 +939,12 @@ input UserUpdateWithoutPostsDataInput {
   email: String
   password: String
   name: String
+  entries: EntryUpdateManyInput
+}
+
+input UserUpsertNestedInput {
+  update: UserUpdateDataInput!
+  create: UserCreateInput!
 }
 
 input UserUpsertWithoutPostsInput {
@@ -856,6 +1176,9 @@ input UserWhereInput {
   posts_every: PostWhereInput
   posts_some: PostWhereInput
   posts_none: PostWhereInput
+  entries_every: EntryWhereInput
+  entries_some: EntryWhereInput
+  entries_none: EntryWhereInput
 }
 
 input UserWhereUniqueInput {
