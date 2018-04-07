@@ -8,7 +8,6 @@
 type Entry implements Node {
   id: ID!
   text: String!
-  author(where: UserWhereInput): User!
   status: EntryStatus
 }
 
@@ -28,7 +27,6 @@ type User implements Node {
   password: String!
   name: String!
   posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post!]
-  entries(where: EntryWhereInput, orderBy: EntryOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Entry!]
 }
 
 
@@ -75,12 +73,6 @@ type EntryConnection {
 input EntryCreateInput {
   text: String!
   status: EntryStatus
-  author: UserCreateOneInput!
-}
-
-input EntryCreateManyInput {
-  create: [EntryCreateInput!]
-  connect: [EntryWhereUniqueInput!]
 }
 
 """
@@ -157,36 +149,9 @@ input EntrySubscriptionWhereInput {
   node: EntryWhereInput
 }
 
-input EntryUpdateDataInput {
-  text: String
-  status: EntryStatus
-  author: UserUpdateOneInput
-}
-
 input EntryUpdateInput {
   text: String
   status: EntryStatus
-  author: UserUpdateOneInput
-}
-
-input EntryUpdateManyInput {
-  create: [EntryCreateInput!]
-  connect: [EntryWhereUniqueInput!]
-  disconnect: [EntryWhereUniqueInput!]
-  delete: [EntryWhereUniqueInput!]
-  update: [EntryUpdateWithWhereUniqueNestedInput!]
-  upsert: [EntryUpsertWithWhereUniqueNestedInput!]
-}
-
-input EntryUpdateWithWhereUniqueNestedInput {
-  where: EntryWhereUniqueInput!
-  data: EntryUpdateDataInput!
-}
-
-input EntryUpsertWithWhereUniqueNestedInput {
-  where: EntryWhereUniqueInput!
-  update: EntryUpdateDataInput!
-  create: EntryCreateInput!
 }
 
 input EntryWhereInput {
@@ -317,7 +282,6 @@ input EntryWhereInput {
   All values that are not contained in given list.
   """
   status_not_in: [EntryStatus!]
-  author: UserWhereInput
 }
 
 input EntryWhereUniqueInput {
@@ -811,12 +775,6 @@ input UserCreateInput {
   password: String!
   name: String!
   posts: PostCreateManyWithoutAuthorInput
-  entries: EntryCreateManyInput
-}
-
-input UserCreateOneInput {
-  create: UserCreateInput
-  connect: UserWhereUniqueInput
 }
 
 input UserCreateOneWithoutPostsInput {
@@ -828,7 +786,6 @@ input UserCreateWithoutPostsInput {
   email: String!
   password: String!
   name: String!
-  entries: EntryCreateManyInput
 }
 
 """
@@ -902,28 +859,11 @@ input UserSubscriptionWhereInput {
   node: UserWhereInput
 }
 
-input UserUpdateDataInput {
-  email: String
-  password: String
-  name: String
-  posts: PostUpdateManyWithoutAuthorInput
-  entries: EntryUpdateManyInput
-}
-
 input UserUpdateInput {
   email: String
   password: String
   name: String
   posts: PostUpdateManyWithoutAuthorInput
-  entries: EntryUpdateManyInput
-}
-
-input UserUpdateOneInput {
-  create: UserCreateInput
-  connect: UserWhereUniqueInput
-  delete: Boolean
-  update: UserUpdateDataInput
-  upsert: UserUpsertNestedInput
 }
 
 input UserUpdateOneWithoutPostsInput {
@@ -938,12 +878,6 @@ input UserUpdateWithoutPostsDataInput {
   email: String
   password: String
   name: String
-  entries: EntryUpdateManyInput
-}
-
-input UserUpsertNestedInput {
-  update: UserUpdateDataInput!
-  create: UserCreateInput!
 }
 
 input UserUpsertWithoutPostsInput {
@@ -1175,9 +1109,6 @@ input UserWhereInput {
   posts_every: PostWhereInput
   posts_some: PostWhereInput
   posts_none: PostWhereInput
-  entries_every: EntryWhereInput
-  entries_some: EntryWhereInput
-  entries_none: EntryWhereInput
 }
 
 input UserWhereUniqueInput {

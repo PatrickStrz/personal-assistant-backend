@@ -4,6 +4,7 @@ type User {
   password: String!
   name: String!
   posts: [Post!]!
+  entries: [Entry!]! @relation(name: "Entries", onDelete: CASCADE)
 }
 
 type Post {
@@ -19,6 +20,7 @@ type Post {
 type Entry {
   id: ID! @unique
   text: String!
+  author: User! @relation(name: "EntryAuthor")
   status: EntryStatus
 }
 
