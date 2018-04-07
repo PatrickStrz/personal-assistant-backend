@@ -5,6 +5,7 @@ export const typeDefs = `
 type Entry implements Node {
   id: ID!
   text: String!
+  author(where: UserWhereInput): User
   status: EntryStatus
 }
 
@@ -24,6 +25,7 @@ type User implements Node {
   password: String!
   name: String!
   posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post!]
+  entries(where: EntryWhereInput, orderBy: EntryOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Entry!]
 }
 
 type AggregateEntry {
@@ -65,6 +67,12 @@ type EntryConnection {
 input EntryCreateInput {
   text: String!
   status: EntryStatus
+  author: UserCreateOneInput
+}
+
+input EntryCreateManyInput {
+  create: [EntryCreateInput!]
+  connect: [EntryWhereUniqueInput!]
 }
 
 """
@@ -141,9 +149,36 @@ input EntrySubscriptionWhereInput {
   node: EntryWhereInput
 }
 
+input EntryUpdateDataInput {
+  text: String
+  status: EntryStatus
+  author: UserUpdateOneInput
+}
+
 input EntryUpdateInput {
   text: String
   status: EntryStatus
+  author: UserUpdateOneInput
+}
+
+input EntryUpdateManyInput {
+  create: [EntryCreateInput!]
+  connect: [EntryWhereUniqueInput!]
+  disconnect: [EntryWhereUniqueInput!]
+  delete: [EntryWhereUniqueInput!]
+  update: [EntryUpdateWithWhereUniqueNestedInput!]
+  upsert: [EntryUpsertWithWhereUniqueNestedInput!]
+}
+
+input EntryUpdateWithWhereUniqueNestedInput {
+  where: EntryWhereUniqueInput!
+  data: EntryUpdateDataInput!
+}
+
+input EntryUpsertWithWhereUniqueNestedInput {
+  where: EntryWhereUniqueInput!
+  update: EntryUpdateDataInput!
+  create: EntryCreateInput!
 }
 
 input EntryWhereInput {
@@ -274,6 +309,7 @@ input EntryWhereInput {
   All values that are not contained in given list.
   """
   status_not_in: [EntryStatus!]
+  author: UserWhereInput
 }
 
 input EntryWhereUniqueInput {
@@ -721,6 +757,12 @@ input UserCreateInput {
   password: String!
   name: String!
   posts: PostCreateManyWithoutAuthorInput
+  entries: EntryCreateManyInput
+}
+
+input UserCreateOneInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
 }
 
 input UserCreateOneWithoutPostsInput {
@@ -732,6 +774,7 @@ input UserCreateWithoutPostsInput {
   email: String!
   password: String!
   name: String!
+  entries: EntryCreateManyInput
 }
 
 """
@@ -805,11 +848,29 @@ input UserSubscriptionWhereInput {
   node: UserWhereInput
 }
 
+input UserUpdateDataInput {
+  email: String
+  password: String
+  name: String
+  posts: PostUpdateManyWithoutAuthorInput
+  entries: EntryUpdateManyInput
+}
+
 input UserUpdateInput {
   email: String
   password: String
   name: String
   posts: PostUpdateManyWithoutAuthorInput
+  entries: EntryUpdateManyInput
+}
+
+input UserUpdateOneInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: UserUpdateDataInput
+  upsert: UserUpsertNestedInput
 }
 
 input UserUpdateOneWithoutPostsInput {
@@ -824,6 +885,12 @@ input UserUpdateWithoutPostsDataInput {
   email: String
   password: String
   name: String
+  entries: EntryUpdateManyInput
+}
+
+input UserUpsertNestedInput {
+  update: UserUpdateDataInput!
+  create: UserCreateInput!
 }
 
 input UserUpsertWithoutPostsInput {
@@ -1055,6 +1122,9 @@ input UserWhereInput {
   posts_every: PostWhereInput
   posts_some: PostWhereInput
   posts_none: PostWhereInput
+  entries_every: EntryWhereInput
+  entries_some: EntryWhereInput
+  entries_none: EntryWhereInput
 }
 
 input UserWhereUniqueInput {
@@ -1109,6 +1179,11 @@ type Subscription {
 }
 `
 
+export type EntryStatus = 
+  'IN_PROGRESS' |
+  'COMPLETED' |
+  'ARCHIVED'
+
 export type UserOrderByInput = 
   'id_ASC' |
   'id_DESC' |
@@ -1137,11 +1212,6 @@ export type PostOrderByInput =
   'text_ASC' |
   'text_DESC'
 
-export type EntryStatus = 
-  'IN_PROGRESS' |
-  'COMPLETED' |
-  'ARCHIVED'
-
 export type EntryOrderByInput = 
   'id_ASC' |
   'id_DESC' |
@@ -1159,11 +1229,10 @@ export type MutationType =
   'UPDATED' |
   'DELETED'
 
-export interface UserCreateInput {
-  email: String
-  password: String
-  name: String
-  posts?: PostCreateManyWithoutAuthorInput
+export interface EntryCreateInput {
+  text: String
+  status?: EntryStatus
+  author?: UserCreateOneInput
 }
 
 export interface UserWhereInput {
@@ -1228,55 +1297,16 @@ export interface UserWhereInput {
   posts_every?: PostWhereInput
   posts_some?: PostWhereInput
   posts_none?: PostWhereInput
+  entries_every?: EntryWhereInput
+  entries_some?: EntryWhereInput
+  entries_none?: EntryWhereInput
 }
 
-export interface UserUpdateWithoutPostsDataInput {
-  email?: String
-  password?: String
-  name?: String
-}
-
-export interface UserCreateOneWithoutPostsInput {
-  create?: UserCreateWithoutPostsInput
-  connect?: UserWhereUniqueInput
-}
-
-export interface UserUpdateOneWithoutPostsInput {
-  create?: UserCreateWithoutPostsInput
-  connect?: UserWhereUniqueInput
-  delete?: Boolean
-  update?: UserUpdateWithoutPostsDataInput
-  upsert?: UserUpsertWithoutPostsInput
-}
-
-export interface PostCreateInput {
-  isPublished?: Boolean
-  title: String
-  text: String
-  author: UserCreateOneWithoutPostsInput
-}
-
-export interface PostUpdateInput {
-  isPublished?: Boolean
-  title?: String
-  text?: String
-  author?: UserUpdateOneWithoutPostsInput
-}
-
-export interface EntrySubscriptionWhereInput {
-  AND?: EntrySubscriptionWhereInput[] | EntrySubscriptionWhereInput
-  OR?: EntrySubscriptionWhereInput[] | EntrySubscriptionWhereInput
-  mutation_in?: MutationType[] | MutationType
-  updatedFields_contains?: String
-  updatedFields_contains_every?: String[] | String
-  updatedFields_contains_some?: String[] | String
-  node?: EntryWhereInput
-}
-
-export interface PostUpsertWithWhereUniqueWithoutAuthorInput {
-  where: PostWhereUniqueInput
-  update: PostUpdateWithoutAuthorDataInput
-  create: PostCreateWithoutAuthorInput
+export interface UserCreateWithoutPostsInput {
+  email: String
+  password: String
+  name: String
+  entries?: EntryCreateManyInput
 }
 
 export interface EntryWhereInput {
@@ -1314,12 +1344,62 @@ export interface EntryWhereInput {
   status_not?: EntryStatus
   status_in?: EntryStatus[] | EntryStatus
   status_not_in?: EntryStatus[] | EntryStatus
+  author?: UserWhereInput
+}
+
+export interface UserUpdateDataInput {
+  email?: String
+  password?: String
+  name?: String
+  posts?: PostUpdateManyWithoutAuthorInput
+  entries?: EntryUpdateManyInput
 }
 
 export interface PostUpdateWithoutAuthorDataInput {
   isPublished?: Boolean
   title?: String
   text?: String
+}
+
+export interface UserUpdateOneInput {
+  create?: UserCreateInput
+  connect?: UserWhereUniqueInput
+  disconnect?: Boolean
+  delete?: Boolean
+  update?: UserUpdateDataInput
+  upsert?: UserUpsertNestedInput
+}
+
+export interface UserUpdateInput {
+  email?: String
+  password?: String
+  name?: String
+  posts?: PostUpdateManyWithoutAuthorInput
+  entries?: EntryUpdateManyInput
+}
+
+export interface EntryUpdateDataInput {
+  text?: String
+  status?: EntryStatus
+  author?: UserUpdateOneInput
+}
+
+export interface EntrySubscriptionWhereInput {
+  AND?: EntrySubscriptionWhereInput[] | EntrySubscriptionWhereInput
+  OR?: EntrySubscriptionWhereInput[] | EntrySubscriptionWhereInput
+  mutation_in?: MutationType[] | MutationType
+  updatedFields_contains?: String
+  updatedFields_contains_every?: String[] | String
+  updatedFields_contains_some?: String[] | String
+  node?: EntryWhereInput
+}
+
+export interface UserCreateInput {
+  email: String
+  password: String
+  name: String
+  posts?: PostCreateManyWithoutAuthorInput
+  entries?: EntryCreateManyInput
 }
 
 export interface PostWhereInput {
@@ -1388,9 +1468,9 @@ export interface PostWhereInput {
   author?: UserWhereInput
 }
 
-export interface PostUpdateWithWhereUniqueWithoutAuthorInput {
-  where: PostWhereUniqueInput
-  data: PostUpdateWithoutAuthorDataInput
+export interface PostCreateManyWithoutAuthorInput {
+  create?: PostCreateWithoutAuthorInput[] | PostCreateWithoutAuthorInput
+  connect?: PostWhereUniqueInput[] | PostWhereUniqueInput
 }
 
 export interface UserWhereUniqueInput {
@@ -1398,24 +1478,55 @@ export interface UserWhereUniqueInput {
   email?: String
 }
 
-export interface PostUpdateManyWithoutAuthorInput {
-  create?: PostCreateWithoutAuthorInput[] | PostCreateWithoutAuthorInput
-  connect?: PostWhereUniqueInput[] | PostWhereUniqueInput
-  disconnect?: PostWhereUniqueInput[] | PostWhereUniqueInput
-  delete?: PostWhereUniqueInput[] | PostWhereUniqueInput
-  update?: PostUpdateWithWhereUniqueWithoutAuthorInput[] | PostUpdateWithWhereUniqueWithoutAuthorInput
-  upsert?: PostUpsertWithWhereUniqueWithoutAuthorInput[] | PostUpsertWithWhereUniqueWithoutAuthorInput
+export interface PostCreateWithoutAuthorInput {
+  isPublished?: Boolean
+  title: String
+  text: String
 }
 
 export interface EntryWhereUniqueInput {
   id?: ID_Input
 }
 
-export interface UserUpdateInput {
-  email?: String
-  password?: String
-  name?: String
-  posts?: PostUpdateManyWithoutAuthorInput
+export interface EntryCreateManyInput {
+  create?: EntryCreateInput[] | EntryCreateInput
+  connect?: EntryWhereUniqueInput[] | EntryWhereUniqueInput
+}
+
+export interface UserUpsertWithoutPostsInput {
+  update: UserUpdateWithoutPostsDataInput
+  create: UserCreateWithoutPostsInput
+}
+
+export interface EntryUpdateWithWhereUniqueNestedInput {
+  where: EntryWhereUniqueInput
+  data: EntryUpdateDataInput
+}
+
+export interface UserUpdateOneWithoutPostsInput {
+  create?: UserCreateWithoutPostsInput
+  connect?: UserWhereUniqueInput
+  delete?: Boolean
+  update?: UserUpdateWithoutPostsDataInput
+  upsert?: UserUpsertWithoutPostsInput
+}
+
+export interface UserCreateOneInput {
+  create?: UserCreateInput
+  connect?: UserWhereUniqueInput
+}
+
+export interface EntryUpsertWithWhereUniqueNestedInput {
+  where: EntryWhereUniqueInput
+  update: EntryUpdateDataInput
+  create: EntryCreateInput
+}
+
+export interface PostCreateInput {
+  isPublished?: Boolean
+  title: String
+  text: String
+  author: UserCreateOneWithoutPostsInput
 }
 
 export interface UserSubscriptionWhereInput {
@@ -1428,31 +1539,55 @@ export interface UserSubscriptionWhereInput {
   node?: UserWhereInput
 }
 
-export interface PostCreateWithoutAuthorInput {
-  isPublished?: Boolean
-  title: String
-  text: String
-}
-
-export interface PostCreateManyWithoutAuthorInput {
-  create?: PostCreateWithoutAuthorInput[] | PostCreateWithoutAuthorInput
-  connect?: PostWhereUniqueInput[] | PostWhereUniqueInput
-}
-
-export interface UserCreateWithoutPostsInput {
-  email: String
-  password: String
-  name: String
-}
-
-export interface EntryCreateInput {
-  text: String
-  status?: EntryStatus
+export interface UserCreateOneWithoutPostsInput {
+  create?: UserCreateWithoutPostsInput
+  connect?: UserWhereUniqueInput
 }
 
 export interface EntryUpdateInput {
   text?: String
   status?: EntryStatus
+  author?: UserUpdateOneInput
+}
+
+export interface PostUpdateWithWhereUniqueWithoutAuthorInput {
+  where: PostWhereUniqueInput
+  data: PostUpdateWithoutAuthorDataInput
+}
+
+export interface PostUpdateManyWithoutAuthorInput {
+  create?: PostCreateWithoutAuthorInput[] | PostCreateWithoutAuthorInput
+  connect?: PostWhereUniqueInput[] | PostWhereUniqueInput
+  disconnect?: PostWhereUniqueInput[] | PostWhereUniqueInput
+  delete?: PostWhereUniqueInput[] | PostWhereUniqueInput
+  update?: PostUpdateWithWhereUniqueWithoutAuthorInput[] | PostUpdateWithWhereUniqueWithoutAuthorInput
+  upsert?: PostUpsertWithWhereUniqueWithoutAuthorInput[] | PostUpsertWithWhereUniqueWithoutAuthorInput
+}
+
+export interface PostUpsertWithWhereUniqueWithoutAuthorInput {
+  where: PostWhereUniqueInput
+  update: PostUpdateWithoutAuthorDataInput
+  create: PostCreateWithoutAuthorInput
+}
+
+export interface EntryUpdateManyInput {
+  create?: EntryCreateInput[] | EntryCreateInput
+  connect?: EntryWhereUniqueInput[] | EntryWhereUniqueInput
+  disconnect?: EntryWhereUniqueInput[] | EntryWhereUniqueInput
+  delete?: EntryWhereUniqueInput[] | EntryWhereUniqueInput
+  update?: EntryUpdateWithWhereUniqueNestedInput[] | EntryUpdateWithWhereUniqueNestedInput
+  upsert?: EntryUpsertWithWhereUniqueNestedInput[] | EntryUpsertWithWhereUniqueNestedInput
+}
+
+export interface UserUpdateWithoutPostsDataInput {
+  email?: String
+  password?: String
+  name?: String
+  entries?: EntryUpdateManyInput
+}
+
+export interface PostWhereUniqueInput {
+  id?: ID_Input
 }
 
 export interface PostSubscriptionWhereInput {
@@ -1465,13 +1600,16 @@ export interface PostSubscriptionWhereInput {
   node?: PostWhereInput
 }
 
-export interface UserUpsertWithoutPostsInput {
-  update: UserUpdateWithoutPostsDataInput
-  create: UserCreateWithoutPostsInput
+export interface UserUpsertNestedInput {
+  update: UserUpdateDataInput
+  create: UserCreateInput
 }
 
-export interface PostWhereUniqueInput {
-  id?: ID_Input
+export interface PostUpdateInput {
+  isPublished?: Boolean
+  title?: String
+  text?: String
+  author?: UserUpdateOneWithoutPostsInput
 }
 
 /*
@@ -1488,10 +1626,14 @@ export interface EntryPreviousValues {
   status?: EntryStatus
 }
 
-export interface Entry extends Node {
-  id: ID_Output
-  text: String
-  status?: EntryStatus
+/*
+ * A connection to a list of items.
+
+ */
+export interface UserConnection {
+  pageInfo: PageInfo
+  edges: UserEdge[]
+  aggregate: AggregateUser
 }
 
 export interface User extends Node {
@@ -1500,21 +1642,18 @@ export interface User extends Node {
   password: String
   name: String
   posts?: Post[]
+  entries?: Entry[]
 }
 
-export interface BatchPayload {
-  count: Long
-}
+/*
+ * Information about pagination in a connection.
 
-export interface AggregateEntry {
-  count: Int
-}
-
-export interface EntrySubscriptionPayload {
-  mutation: MutationType
-  node?: Entry
-  updatedFields?: String[]
-  previousValues?: EntryPreviousValues
+ */
+export interface PageInfo {
+  hasNextPage: Boolean
+  hasPreviousPage: Boolean
+  startCursor?: String
+  endCursor?: String
 }
 
 export interface Post extends Node {
@@ -1527,13 +1666,19 @@ export interface Post extends Node {
   author: User
 }
 
-/*
- * An edge in a connection.
+export interface EntrySubscriptionPayload {
+  mutation: MutationType
+  node?: Entry
+  updatedFields?: String[]
+  previousValues?: EntryPreviousValues
+}
 
- */
-export interface EntryEdge {
-  node: Entry
-  cursor: String
+export interface BatchPayload {
+  count: Long
+}
+
+export interface AggregateEntry {
+  count: Int
 }
 
 /*
@@ -1546,27 +1691,26 @@ export interface EntryConnection {
   aggregate: AggregateEntry
 }
 
-export interface AggregatePost {
-  count: Int
-}
-
-/*
- * A connection to a list of items.
-
- */
-export interface PostConnection {
-  pageInfo: PageInfo
-  edges: PostEdge[]
-  aggregate: AggregatePost
+export interface PostPreviousValues {
+  id: ID_Output
+  createdAt: DateTime
+  updatedAt: DateTime
+  isPublished: Boolean
+  title: String
+  text: String
 }
 
 /*
  * An edge in a connection.
 
  */
-export interface UserEdge {
-  node: User
+export interface PostEdge {
+  node: Post
   cursor: String
+}
+
+export interface AggregateUser {
+  count: Int
 }
 
 export interface UserPreviousValues {
@@ -1590,36 +1734,19 @@ export interface PostSubscriptionPayload {
   previousValues?: PostPreviousValues
 }
 
-export interface PostPreviousValues {
+export interface Entry extends Node {
   id: ID_Output
-  createdAt: DateTime
-  updatedAt: DateTime
-  isPublished: Boolean
-  title: String
   text: String
-}
-
-/*
- * Information about pagination in a connection.
-
- */
-export interface PageInfo {
-  hasNextPage: Boolean
-  hasPreviousPage: Boolean
-  startCursor?: String
-  endCursor?: String
-}
-
-export interface AggregateUser {
-  count: Int
+  author?: User
+  status?: EntryStatus
 }
 
 /*
  * An edge in a connection.
 
  */
-export interface PostEdge {
-  node: Post
+export interface UserEdge {
+  node: User
   cursor: String
 }
 
@@ -1627,17 +1754,24 @@ export interface PostEdge {
  * A connection to a list of items.
 
  */
-export interface UserConnection {
+export interface PostConnection {
   pageInfo: PageInfo
-  edges: UserEdge[]
-  aggregate: AggregateUser
+  edges: PostEdge[]
+  aggregate: AggregatePost
+}
+
+export interface AggregatePost {
+  count: Int
 }
 
 /*
-The 'Long' scalar type represents non-fractional signed whole numeric values.
-Long can represent values between -(2^63) and 2^63 - 1.
-*/
-export type Long = string
+ * An edge in a connection.
+
+ */
+export interface EntryEdge {
+  node: Entry
+  cursor: String
+}
 
 /*
 The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1. 
@@ -1656,6 +1790,12 @@ The `Boolean` scalar type represents `true` or `false`.
 export type Boolean = boolean
 
 export type DateTime = string
+
+/*
+The 'Long' scalar type represents non-fractional signed whole numeric values.
+Long can represent values between -(2^63) and 2^63 - 1.
+*/
+export type Long = string
 
 /*
 The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
