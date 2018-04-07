@@ -5,7 +5,7 @@ export const typeDefs = `
 type Entry implements Node {
   id: ID!
   text: String!
-  author(where: UserWhereInput): User
+  author(where: UserWhereInput): User!
   status: EntryStatus
 }
 
@@ -67,7 +67,7 @@ type EntryConnection {
 input EntryCreateInput {
   text: String!
   status: EntryStatus
-  author: UserCreateOneInput
+  author: UserCreateOneInput!
 }
 
 input EntryCreateManyInput {
@@ -867,7 +867,6 @@ input UserUpdateInput {
 input UserUpdateOneInput {
   create: UserCreateInput
   connect: UserWhereUniqueInput
-  disconnect: Boolean
   delete: Boolean
   update: UserUpdateDataInput
   upsert: UserUpsertNestedInput
@@ -1232,7 +1231,7 @@ export type MutationType =
 export interface EntryCreateInput {
   text: String
   status?: EntryStatus
-  author?: UserCreateOneInput
+  author: UserCreateOneInput
 }
 
 export interface UserWhereInput {
@@ -1364,7 +1363,6 @@ export interface PostUpdateWithoutAuthorDataInput {
 export interface UserUpdateOneInput {
   create?: UserCreateInput
   connect?: UserWhereUniqueInput
-  disconnect?: Boolean
   delete?: Boolean
   update?: UserUpdateDataInput
   upsert?: UserUpsertNestedInput
@@ -1737,7 +1735,7 @@ export interface PostSubscriptionPayload {
 export interface Entry extends Node {
   id: ID_Output
   text: String
-  author?: User
+  author: User
   status?: EntryStatus
 }
 

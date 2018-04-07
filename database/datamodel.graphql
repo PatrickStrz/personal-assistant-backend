@@ -20,7 +20,7 @@ type Post {
 type Entry {
   id: ID! @unique
   text: String!
-  author: User @relation(name: "EntryAuthor")
+  author: User! @relation(name: "EntryAuthor")
   status: EntryStatus
 }
 
