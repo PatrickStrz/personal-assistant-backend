@@ -1,3 +1,12 @@
+type User {
+  id: ID! @unique
+  email: String! @unique
+  password: String!
+  name: String!
+  posts: [Post!]!
+  entries: [Entry!]! @relation(name: "Entries", onDelete: CASCADE)
+}
+
 type Post {
   id: ID! @unique
   createdAt: DateTime!
@@ -8,10 +17,15 @@ type Post {
   author: User!
 }
 
-type User {
+type Entry {
   id: ID! @unique
-  email: String! @unique
-  password: String!
-  name: String!
-  posts: [Post!]!
+  text: String!
+  author: User @relation(name: "EntryAuthor", onDelete: NO_ACTION)
+  status: EntryStatus
+}
+
+enum EntryStatus {
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
 }
