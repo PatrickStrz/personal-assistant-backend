@@ -8,7 +8,7 @@
 type Entry implements Node {
   id: ID!
   text: String!
-  author(where: UserWhereInput): User
+  author(where: UserWhereInput): User!
   status: EntryStatus
 }
 
@@ -75,12 +75,17 @@ type EntryConnection {
 input EntryCreateInput {
   text: String!
   status: EntryStatus
-  author: UserCreateOneInput
+  author: UserCreateOneWithoutEntriesInput!
 }
 
-input EntryCreateManyInput {
-  create: [EntryCreateInput!]
+input EntryCreateManyWithoutAuthorInput {
+  create: [EntryCreateWithoutAuthorInput!]
   connect: [EntryWhereUniqueInput!]
+}
+
+input EntryCreateWithoutAuthorInput {
+  text: String!
+  status: EntryStatus
 }
 
 """
@@ -157,36 +162,35 @@ input EntrySubscriptionWhereInput {
   node: EntryWhereInput
 }
 
-input EntryUpdateDataInput {
-  text: String
-  status: EntryStatus
-  author: UserUpdateOneInput
-}
-
 input EntryUpdateInput {
   text: String
   status: EntryStatus
-  author: UserUpdateOneInput
+  author: UserUpdateOneWithoutEntriesInput
 }
 
-input EntryUpdateManyInput {
-  create: [EntryCreateInput!]
+input EntryUpdateManyWithoutAuthorInput {
+  create: [EntryCreateWithoutAuthorInput!]
   connect: [EntryWhereUniqueInput!]
   disconnect: [EntryWhereUniqueInput!]
   delete: [EntryWhereUniqueInput!]
-  update: [EntryUpdateWithWhereUniqueNestedInput!]
-  upsert: [EntryUpsertWithWhereUniqueNestedInput!]
+  update: [EntryUpdateWithWhereUniqueWithoutAuthorInput!]
+  upsert: [EntryUpsertWithWhereUniqueWithoutAuthorInput!]
 }
 
-input EntryUpdateWithWhereUniqueNestedInput {
-  where: EntryWhereUniqueInput!
-  data: EntryUpdateDataInput!
+input EntryUpdateWithoutAuthorDataInput {
+  text: String
+  status: EntryStatus
 }
 
-input EntryUpsertWithWhereUniqueNestedInput {
+input EntryUpdateWithWhereUniqueWithoutAuthorInput {
   where: EntryWhereUniqueInput!
-  update: EntryUpdateDataInput!
-  create: EntryCreateInput!
+  data: EntryUpdateWithoutAuthorDataInput!
+}
+
+input EntryUpsertWithWhereUniqueWithoutAuthorInput {
+  where: EntryWhereUniqueInput!
+  update: EntryUpdateWithoutAuthorDataInput!
+  create: EntryCreateWithoutAuthorInput!
 }
 
 input EntryWhereInput {
@@ -811,11 +815,11 @@ input UserCreateInput {
   password: String!
   name: String!
   posts: PostCreateManyWithoutAuthorInput
-  entries: EntryCreateManyInput
+  entries: EntryCreateManyWithoutAuthorInput
 }
 
-input UserCreateOneInput {
-  create: UserCreateInput
+input UserCreateOneWithoutEntriesInput {
+  create: UserCreateWithoutEntriesInput
   connect: UserWhereUniqueInput
 }
 
@@ -824,11 +828,18 @@ input UserCreateOneWithoutPostsInput {
   connect: UserWhereUniqueInput
 }
 
+input UserCreateWithoutEntriesInput {
+  email: String!
+  password: String!
+  name: String!
+  posts: PostCreateManyWithoutAuthorInput
+}
+
 input UserCreateWithoutPostsInput {
   email: String!
   password: String!
   name: String!
-  entries: EntryCreateManyInput
+  entries: EntryCreateManyWithoutAuthorInput
 }
 
 """
@@ -902,29 +913,20 @@ input UserSubscriptionWhereInput {
   node: UserWhereInput
 }
 
-input UserUpdateDataInput {
-  email: String
-  password: String
-  name: String
-  posts: PostUpdateManyWithoutAuthorInput
-  entries: EntryUpdateManyInput
-}
-
 input UserUpdateInput {
   email: String
   password: String
   name: String
   posts: PostUpdateManyWithoutAuthorInput
-  entries: EntryUpdateManyInput
+  entries: EntryUpdateManyWithoutAuthorInput
 }
 
-input UserUpdateOneInput {
-  create: UserCreateInput
+input UserUpdateOneWithoutEntriesInput {
+  create: UserCreateWithoutEntriesInput
   connect: UserWhereUniqueInput
-  disconnect: Boolean
   delete: Boolean
-  update: UserUpdateDataInput
-  upsert: UserUpsertNestedInput
+  update: UserUpdateWithoutEntriesDataInput
+  upsert: UserUpsertWithoutEntriesInput
 }
 
 input UserUpdateOneWithoutPostsInput {
@@ -935,16 +937,23 @@ input UserUpdateOneWithoutPostsInput {
   upsert: UserUpsertWithoutPostsInput
 }
 
+input UserUpdateWithoutEntriesDataInput {
+  email: String
+  password: String
+  name: String
+  posts: PostUpdateManyWithoutAuthorInput
+}
+
 input UserUpdateWithoutPostsDataInput {
   email: String
   password: String
   name: String
-  entries: EntryUpdateManyInput
+  entries: EntryUpdateManyWithoutAuthorInput
 }
 
-input UserUpsertNestedInput {
-  update: UserUpdateDataInput!
-  create: UserCreateInput!
+input UserUpsertWithoutEntriesInput {
+  update: UserUpdateWithoutEntriesDataInput!
+  create: UserCreateWithoutEntriesInput!
 }
 
 input UserUpsertWithoutPostsInput {
