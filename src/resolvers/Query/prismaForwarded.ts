@@ -1,5 +1,11 @@
 const { forwardTo } = require("prisma-binding")
 
 export default {
-  posts: forwardTo("db")
+  users: forwardTo("db"),
+  user: forwardTo("db"),
+  posts: forwardTo("db"),
+  post: forwardTo("db"),
+  entry: forwardTo("db"),
+  usersConnection: forwardTo("db"),
+  entriesConnection: forwardTo("db")
 }

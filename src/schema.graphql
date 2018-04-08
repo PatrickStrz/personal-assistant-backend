@@ -2,7 +2,15 @@
 
 type Query {
   me: User
-  post(id: ID!): Post
+  users(
+    where: UserWhereInput
+    orderBy: UserOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): [User]!
   posts(
     where: PostWhereInput
     orderBy: PostOrderByInput
@@ -12,6 +20,45 @@ type Query {
     first: Int
     last: Int
   ): [Post]!
+  entries(
+    where: EntryWhereInput
+    orderBy: EntryOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): [Entry]!
+  user(where: UserWhereUniqueInput!): User
+  post(where: PostWhereUniqueInput!): Post
+  entry(where: EntryWhereUniqueInput!): Entry
+  usersConnection(
+    where: UserWhereInput
+    orderBy: UserOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): UserConnection!
+  postsConnection(
+    where: PostWhereInput
+    orderBy: PostOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): PostConnection!
+  entriesConnection(
+    where: EntryWhereInput
+    orderBy: EntryOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): EntryConnection!
 }
 
 type Mutation {
@@ -27,8 +74,9 @@ type AuthPayload {
 }
 
 type User {
+  # don't show password!
   id: ID!
   email: String!
   name: String!
-  posts: [Post!]!
+  entries: [Entry!]!
 }
