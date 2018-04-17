@@ -9,17 +9,7 @@ type Entry implements Node {
   id: ID!
   text: String!
   author(where: UserWhereInput): User!
-  status: EntryStatus
-}
-
-type Post implements Node {
-  id: ID!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  isPublished: Boolean!
-  title: String!
-  text: String!
-  author(where: UserWhereInput): User!
+  status: EntryStatus!
 }
 
 type User implements Node {
@@ -27,7 +17,6 @@ type User implements Node {
   email: String!
   password: String!
   name: String!
-  posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post!]
   entries(where: EntryWhereInput, orderBy: EntryOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Entry!]
 }
 
@@ -37,10 +26,6 @@ type User implements Node {
 #
 
 type AggregateEntry {
-  count: Int!
-}
-
-type AggregatePost {
   count: Int!
 }
 
@@ -54,8 +39,6 @@ type BatchPayload {
   """
   count: Long!
 }
-
-scalar DateTime
 
 """
 A connection to a list of items.
@@ -74,7 +57,7 @@ type EntryConnection {
 
 input EntryCreateInput {
   text: String!
-  status: EntryStatus
+  status: EntryStatus!
   author: UserCreateOneWithoutEntriesInput!
 }
 
@@ -85,7 +68,7 @@ input EntryCreateManyWithoutAuthorInput {
 
 input EntryCreateWithoutAuthorInput {
   text: String!
-  status: EntryStatus
+  status: EntryStatus!
 }
 
 """
@@ -118,7 +101,7 @@ enum EntryOrderByInput {
 type EntryPreviousValues {
   id: ID!
   text: String!
-  status: EntryStatus
+  status: EntryStatus!
 }
 
 enum EntryStatus {
@@ -336,23 +319,17 @@ scalar Long
 
 type Mutation {
   createUser(data: UserCreateInput!): User!
-  createPost(data: PostCreateInput!): Post!
   createEntry(data: EntryCreateInput!): Entry!
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
-  updatePost(data: PostUpdateInput!, where: PostWhereUniqueInput!): Post
   updateEntry(data: EntryUpdateInput!, where: EntryWhereUniqueInput!): Entry
   deleteUser(where: UserWhereUniqueInput!): User
-  deletePost(where: PostWhereUniqueInput!): Post
   deleteEntry(where: EntryWhereUniqueInput!): Entry
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
-  upsertPost(where: PostWhereUniqueInput!, create: PostCreateInput!, update: PostUpdateInput!): Post!
   upsertEntry(where: EntryWhereUniqueInput!, create: EntryCreateInput!, update: EntryUpdateInput!): Entry!
-  updateManyUsers(data: UserUpdateInput!, where: UserWhereInput!): BatchPayload!
-  updateManyPosts(data: PostUpdateInput!, where: PostWhereInput!): BatchPayload!
-  updateManyEntries(data: EntryUpdateInput!, where: EntryWhereInput!): BatchPayload!
-  deleteManyUsers(where: UserWhereInput!): BatchPayload!
-  deleteManyPosts(where: PostWhereInput!): BatchPayload!
-  deleteManyEntries(where: EntryWhereInput!): BatchPayload!
+  updateManyUsers(data: UserUpdateInput!, where: UserWhereInput): BatchPayload!
+  updateManyEntries(data: EntryUpdateInput!, where: EntryWhereInput): BatchPayload!
+  deleteManyUsers(where: UserWhereInput): BatchPayload!
+  deleteManyEntries(where: EntryWhereInput): BatchPayload!
 }
 
 enum MutationType {
@@ -393,392 +370,12 @@ type PageInfo {
   endCursor: String
 }
 
-"""
-A connection to a list of items.
-"""
-type PostConnection {
-  """
-  Information to aid in pagination.
-  """
-  pageInfo: PageInfo!
-  """
-  A list of edges.
-  """
-  edges: [PostEdge]!
-  aggregate: AggregatePost!
-}
-
-input PostCreateInput {
-  isPublished: Boolean
-  title: String!
-  text: String!
-  author: UserCreateOneWithoutPostsInput!
-}
-
-input PostCreateManyWithoutAuthorInput {
-  create: [PostCreateWithoutAuthorInput!]
-  connect: [PostWhereUniqueInput!]
-}
-
-input PostCreateWithoutAuthorInput {
-  isPublished: Boolean
-  title: String!
-  text: String!
-}
-
-"""
-An edge in a connection.
-"""
-type PostEdge {
-  """
-  The item at the end of the edge.
-  """
-  node: Post!
-  """
-  A cursor for use in pagination.
-  """
-  cursor: String!
-}
-
-enum PostOrderByInput {
-  id_ASC
-  id_DESC
-  createdAt_ASC
-  createdAt_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  isPublished_ASC
-  isPublished_DESC
-  title_ASC
-  title_DESC
-  text_ASC
-  text_DESC
-}
-
-type PostPreviousValues {
-  id: ID!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  isPublished: Boolean!
-  title: String!
-  text: String!
-}
-
-type PostSubscriptionPayload {
-  mutation: MutationType!
-  node: Post
-  updatedFields: [String!]
-  previousValues: PostPreviousValues
-}
-
-input PostSubscriptionWhereInput {
-  """
-  Logical AND on all given filters.
-  """
-  AND: [PostSubscriptionWhereInput!]
-  """
-  Logical OR on all given filters.
-  """
-  OR: [PostSubscriptionWhereInput!]
-  """
-  The subscription event gets dispatched when it's listed in mutation_in
-  """
-  mutation_in: [MutationType!]
-  """
-  The subscription event gets only dispatched when one of the updated fields names is included in this list
-  """
-  updatedFields_contains: String
-  """
-  The subscription event gets only dispatched when all of the field names included in this list have been updated
-  """
-  updatedFields_contains_every: [String!]
-  """
-  The subscription event gets only dispatched when some of the field names included in this list have been updated
-  """
-  updatedFields_contains_some: [String!]
-  node: PostWhereInput
-}
-
-input PostUpdateInput {
-  isPublished: Boolean
-  title: String
-  text: String
-  author: UserUpdateOneWithoutPostsInput
-}
-
-input PostUpdateManyWithoutAuthorInput {
-  create: [PostCreateWithoutAuthorInput!]
-  connect: [PostWhereUniqueInput!]
-  disconnect: [PostWhereUniqueInput!]
-  delete: [PostWhereUniqueInput!]
-  update: [PostUpdateWithWhereUniqueWithoutAuthorInput!]
-  upsert: [PostUpsertWithWhereUniqueWithoutAuthorInput!]
-}
-
-input PostUpdateWithoutAuthorDataInput {
-  isPublished: Boolean
-  title: String
-  text: String
-}
-
-input PostUpdateWithWhereUniqueWithoutAuthorInput {
-  where: PostWhereUniqueInput!
-  data: PostUpdateWithoutAuthorDataInput!
-}
-
-input PostUpsertWithWhereUniqueWithoutAuthorInput {
-  where: PostWhereUniqueInput!
-  update: PostUpdateWithoutAuthorDataInput!
-  create: PostCreateWithoutAuthorInput!
-}
-
-input PostWhereInput {
-  """
-  Logical AND on all given filters.
-  """
-  AND: [PostWhereInput!]
-  """
-  Logical OR on all given filters.
-  """
-  OR: [PostWhereInput!]
-  id: ID
-  """
-  All values that are not equal to given value.
-  """
-  id_not: ID
-  """
-  All values that are contained in given list.
-  """
-  id_in: [ID!]
-  """
-  All values that are not contained in given list.
-  """
-  id_not_in: [ID!]
-  """
-  All values less than the given value.
-  """
-  id_lt: ID
-  """
-  All values less than or equal the given value.
-  """
-  id_lte: ID
-  """
-  All values greater than the given value.
-  """
-  id_gt: ID
-  """
-  All values greater than or equal the given value.
-  """
-  id_gte: ID
-  """
-  All values containing the given string.
-  """
-  id_contains: ID
-  """
-  All values not containing the given string.
-  """
-  id_not_contains: ID
-  """
-  All values starting with the given string.
-  """
-  id_starts_with: ID
-  """
-  All values not starting with the given string.
-  """
-  id_not_starts_with: ID
-  """
-  All values ending with the given string.
-  """
-  id_ends_with: ID
-  """
-  All values not ending with the given string.
-  """
-  id_not_ends_with: ID
-  createdAt: DateTime
-  """
-  All values that are not equal to given value.
-  """
-  createdAt_not: DateTime
-  """
-  All values that are contained in given list.
-  """
-  createdAt_in: [DateTime!]
-  """
-  All values that are not contained in given list.
-  """
-  createdAt_not_in: [DateTime!]
-  """
-  All values less than the given value.
-  """
-  createdAt_lt: DateTime
-  """
-  All values less than or equal the given value.
-  """
-  createdAt_lte: DateTime
-  """
-  All values greater than the given value.
-  """
-  createdAt_gt: DateTime
-  """
-  All values greater than or equal the given value.
-  """
-  createdAt_gte: DateTime
-  updatedAt: DateTime
-  """
-  All values that are not equal to given value.
-  """
-  updatedAt_not: DateTime
-  """
-  All values that are contained in given list.
-  """
-  updatedAt_in: [DateTime!]
-  """
-  All values that are not contained in given list.
-  """
-  updatedAt_not_in: [DateTime!]
-  """
-  All values less than the given value.
-  """
-  updatedAt_lt: DateTime
-  """
-  All values less than or equal the given value.
-  """
-  updatedAt_lte: DateTime
-  """
-  All values greater than the given value.
-  """
-  updatedAt_gt: DateTime
-  """
-  All values greater than or equal the given value.
-  """
-  updatedAt_gte: DateTime
-  isPublished: Boolean
-  """
-  All values that are not equal to given value.
-  """
-  isPublished_not: Boolean
-  title: String
-  """
-  All values that are not equal to given value.
-  """
-  title_not: String
-  """
-  All values that are contained in given list.
-  """
-  title_in: [String!]
-  """
-  All values that are not contained in given list.
-  """
-  title_not_in: [String!]
-  """
-  All values less than the given value.
-  """
-  title_lt: String
-  """
-  All values less than or equal the given value.
-  """
-  title_lte: String
-  """
-  All values greater than the given value.
-  """
-  title_gt: String
-  """
-  All values greater than or equal the given value.
-  """
-  title_gte: String
-  """
-  All values containing the given string.
-  """
-  title_contains: String
-  """
-  All values not containing the given string.
-  """
-  title_not_contains: String
-  """
-  All values starting with the given string.
-  """
-  title_starts_with: String
-  """
-  All values not starting with the given string.
-  """
-  title_not_starts_with: String
-  """
-  All values ending with the given string.
-  """
-  title_ends_with: String
-  """
-  All values not ending with the given string.
-  """
-  title_not_ends_with: String
-  text: String
-  """
-  All values that are not equal to given value.
-  """
-  text_not: String
-  """
-  All values that are contained in given list.
-  """
-  text_in: [String!]
-  """
-  All values that are not contained in given list.
-  """
-  text_not_in: [String!]
-  """
-  All values less than the given value.
-  """
-  text_lt: String
-  """
-  All values less than or equal the given value.
-  """
-  text_lte: String
-  """
-  All values greater than the given value.
-  """
-  text_gt: String
-  """
-  All values greater than or equal the given value.
-  """
-  text_gte: String
-  """
-  All values containing the given string.
-  """
-  text_contains: String
-  """
-  All values not containing the given string.
-  """
-  text_not_contains: String
-  """
-  All values starting with the given string.
-  """
-  text_starts_with: String
-  """
-  All values not starting with the given string.
-  """
-  text_not_starts_with: String
-  """
-  All values ending with the given string.
-  """
-  text_ends_with: String
-  """
-  All values not ending with the given string.
-  """
-  text_not_ends_with: String
-  author: UserWhereInput
-}
-
-input PostWhereUniqueInput {
-  id: ID
-}
-
 type Query {
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
-  posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post]!
   entries(where: EntryWhereInput, orderBy: EntryOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Entry]!
   user(where: UserWhereUniqueInput!): User
-  post(where: PostWhereUniqueInput!): Post
   entry(where: EntryWhereUniqueInput!): Entry
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
-  postsConnection(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PostConnection!
   entriesConnection(where: EntryWhereInput, orderBy: EntryOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): EntryConnection!
   """
   Fetches an object given its ID
@@ -791,7 +388,6 @@ type Query {
 
 type Subscription {
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
-  post(where: PostSubscriptionWhereInput): PostSubscriptionPayload
   entry(where: EntrySubscriptionWhereInput): EntrySubscriptionPayload
 }
 
@@ -814,7 +410,6 @@ input UserCreateInput {
   email: String!
   password: String!
   name: String!
-  posts: PostCreateManyWithoutAuthorInput
   entries: EntryCreateManyWithoutAuthorInput
 }
 
@@ -823,23 +418,10 @@ input UserCreateOneWithoutEntriesInput {
   connect: UserWhereUniqueInput
 }
 
-input UserCreateOneWithoutPostsInput {
-  create: UserCreateWithoutPostsInput
-  connect: UserWhereUniqueInput
-}
-
 input UserCreateWithoutEntriesInput {
   email: String!
   password: String!
   name: String!
-  posts: PostCreateManyWithoutAuthorInput
-}
-
-input UserCreateWithoutPostsInput {
-  email: String!
-  password: String!
-  name: String!
-  entries: EntryCreateManyWithoutAuthorInput
 }
 
 """
@@ -917,7 +499,6 @@ input UserUpdateInput {
   email: String
   password: String
   name: String
-  posts: PostUpdateManyWithoutAuthorInput
   entries: EntryUpdateManyWithoutAuthorInput
 }
 
@@ -929,36 +510,15 @@ input UserUpdateOneWithoutEntriesInput {
   upsert: UserUpsertWithoutEntriesInput
 }
 
-input UserUpdateOneWithoutPostsInput {
-  create: UserCreateWithoutPostsInput
-  connect: UserWhereUniqueInput
-  delete: Boolean
-  update: UserUpdateWithoutPostsDataInput
-  upsert: UserUpsertWithoutPostsInput
-}
-
 input UserUpdateWithoutEntriesDataInput {
   email: String
   password: String
   name: String
-  posts: PostUpdateManyWithoutAuthorInput
-}
-
-input UserUpdateWithoutPostsDataInput {
-  email: String
-  password: String
-  name: String
-  entries: EntryUpdateManyWithoutAuthorInput
 }
 
 input UserUpsertWithoutEntriesInput {
   update: UserUpdateWithoutEntriesDataInput!
   create: UserCreateWithoutEntriesInput!
-}
-
-input UserUpsertWithoutPostsInput {
-  update: UserUpdateWithoutPostsDataInput!
-  create: UserCreateWithoutPostsInput!
 }
 
 input UserWhereInput {
@@ -1182,9 +742,6 @@ input UserWhereInput {
   All values not ending with the given string.
   """
   name_not_ends_with: String
-  posts_every: PostWhereInput
-  posts_some: PostWhereInput
-  posts_none: PostWhereInput
   entries_every: EntryWhereInput
   entries_some: EntryWhereInput
   entries_none: EntryWhereInput
