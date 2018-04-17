@@ -6,6 +6,7 @@ export default {
   posts: forwardTo("db"),
   post: forwardTo("db"),
   entry: forwardTo("db"),
+  entries: forwardTo("db"),
   usersConnection: forwardTo("db"),
   entriesConnection: forwardTo("db")
 }
