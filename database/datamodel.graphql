@@ -3,25 +3,14 @@ type User {
   email: String! @unique
   password: String!
   name: String!
-  posts: [Post!]!
   entries: [Entry!]! @relation(name: "Entries", onDelete: CASCADE)
-}
-
-type Post {
-  id: ID! @unique
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  isPublished: Boolean! @default(value: "false")
-  title: String!
-  text: String!
-  author: User!
 }
 
 type Entry {
   id: ID! @unique
   text: String!
   author: User! @relation(name: "Entries")
-  status: EntryStatus
+  status: EntryStatus!
 }
 
 enum EntryStatus {
