@@ -13,7 +13,8 @@ type User implements Node {
   id: ID!
   email: String!
   password: String!
-  name: String!
+  firstName: String!
+  lastName: String!
   entries(where: EntryWhereInput, orderBy: EntryOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Entry!]
 }
 
@@ -365,7 +366,8 @@ type UserConnection {
 input UserCreateInput {
   email: String!
   password: String!
-  name: String!
+  firstName: String!
+  lastName: String!
   entries: EntryCreateManyWithoutAuthorInput
 }
 
@@ -377,7 +379,8 @@ input UserCreateOneWithoutEntriesInput {
 input UserCreateWithoutEntriesInput {
   email: String!
   password: String!
-  name: String!
+  firstName: String!
+  lastName: String!
 }
 
 """
@@ -401,8 +404,10 @@ enum UserOrderByInput {
   email_DESC
   password_ASC
   password_DESC
-  name_ASC
-  name_DESC
+  firstName_ASC
+  firstName_DESC
+  lastName_ASC
+  lastName_DESC
   updatedAt_ASC
   updatedAt_DESC
   createdAt_ASC
@@ -413,7 +418,8 @@ type UserPreviousValues {
   id: ID!
   email: String!
   password: String!
-  name: String!
+  firstName: String!
+  lastName: String!
 }
 
 type UserSubscriptionPayload {
@@ -454,7 +460,8 @@ input UserSubscriptionWhereInput {
 input UserUpdateInput {
   email: String
   password: String
-  name: String
+  firstName: String
+  lastName: String
   entries: EntryUpdateManyWithoutAuthorInput
 }
 
@@ -469,7 +476,8 @@ input UserUpdateOneWithoutEntriesInput {
 input UserUpdateWithoutEntriesDataInput {
   email: String
   password: String
-  name: String
+  firstName: String
+  lastName: String
 }
 
 input UserUpsertWithoutEntriesInput {
@@ -645,59 +653,112 @@ input UserWhereInput {
   All values not ending with the given string.
   """
   password_not_ends_with: String
-  name: String
+  firstName: String
   """
   All values that are not equal to given value.
   """
-  name_not: String
+  firstName_not: String
   """
   All values that are contained in given list.
   """
-  name_in: [String!]
+  firstName_in: [String!]
   """
   All values that are not contained in given list.
   """
-  name_not_in: [String!]
+  firstName_not_in: [String!]
   """
   All values less than the given value.
   """
-  name_lt: String
+  firstName_lt: String
   """
   All values less than or equal the given value.
   """
-  name_lte: String
+  firstName_lte: String
   """
   All values greater than the given value.
   """
-  name_gt: String
+  firstName_gt: String
   """
   All values greater than or equal the given value.
   """
-  name_gte: String
+  firstName_gte: String
   """
   All values containing the given string.
   """
-  name_contains: String
+  firstName_contains: String
   """
   All values not containing the given string.
   """
-  name_not_contains: String
+  firstName_not_contains: String
   """
   All values starting with the given string.
   """
-  name_starts_with: String
+  firstName_starts_with: String
   """
   All values not starting with the given string.
   """
-  name_not_starts_with: String
+  firstName_not_starts_with: String
   """
   All values ending with the given string.
   """
-  name_ends_with: String
+  firstName_ends_with: String
   """
   All values not ending with the given string.
   """
-  name_not_ends_with: String
+  firstName_not_ends_with: String
+  lastName: String
+  """
+  All values that are not equal to given value.
+  """
+  lastName_not: String
+  """
+  All values that are contained in given list.
+  """
+  lastName_in: [String!]
+  """
+  All values that are not contained in given list.
+  """
+  lastName_not_in: [String!]
+  """
+  All values less than the given value.
+  """
+  lastName_lt: String
+  """
+  All values less than or equal the given value.
+  """
+  lastName_lte: String
+  """
+  All values greater than the given value.
+  """
+  lastName_gt: String
+  """
+  All values greater than or equal the given value.
+  """
+  lastName_gte: String
+  """
+  All values containing the given string.
+  """
+  lastName_contains: String
+  """
+  All values not containing the given string.
+  """
+  lastName_not_contains: String
+  """
+  All values starting with the given string.
+  """
+  lastName_starts_with: String
+  """
+  All values not starting with the given string.
+  """
+  lastName_not_starts_with: String
+  """
+  All values ending with the given string.
+  """
+  lastName_ends_with: String
+  """
+  All values not ending with the given string.
+  """
+  lastName_not_ends_with: String
   entries_every: EntryWhereInput
   entries_some: EntryWhereInput
   entries_none: EntryWhereInput
@@ -752,8 +813,10 @@ export type UserOrderByInput =
   'email_DESC' |
   'password_ASC' |
   'password_DESC' |
-  'name_ASC' |
-  'name_DESC' |
+  'firstName_ASC' |
+  'firstName_DESC' |
+  'lastName_ASC' |
+  'lastName_DESC' |
   'updatedAt_ASC' |
   'updatedAt_DESC' |
   'createdAt_ASC' |
@@ -831,20 +894,34 @@ export interface UserWhereInput {
   password_not_starts_with?: String
   password_ends_with?: String
   password_not_ends_with?: String
-  name?: String
-  name_not?: String
-  name_in?: String[] | String
-  name_not_in?: String[] | String
-  name_lt?: String
-  name_lte?: String
-  name_gt?: String
-  name_gte?: String
-  name_contains?: String
-  name_not_contains?: String
-  name_starts_with?: String
-  name_not_starts_with?: String
-  name_ends_with?: String
-  name_not_ends_with?: String
+  firstName?: String
+  firstName_not?: String
+  firstName_in?: String[] | String
+  firstName_not_in?: String[] | String
+  firstName_lt?: String
+  firstName_lte?: String
+  firstName_gt?: String
+  firstName_gte?: String
+  firstName_contains?: String
+  firstName_not_contains?: String
+  firstName_starts_with?: String
+  firstName_not_starts_with?: String
+  firstName_ends_with?: String
+  firstName_not_ends_with?: String
+  lastName?: String
+  lastName_not?: String
+  lastName_in?: String[] | String
+  lastName_not_in?: String[] | String
+  lastName_lt?: String
+  lastName_lte?: String
+  lastName_gt?: String
+  lastName_gte?: String
+  lastName_contains?: String
+  lastName_not_contains?: String
+  lastName_starts_with?: String
+  lastName_not_starts_with?: String
+  lastName_ends_with?: String
+  lastName_not_ends_with?: String
   entries_every?: EntryWhereInput
   entries_some?: EntryWhereInput
   entries_none?: EntryWhereInput
@@ -859,7 +936,8 @@ export interface EntryUpdateInput {
 export interface UserCreateWithoutEntriesInput {
   email: String
   password: String
-  name: String
+  firstName: String
+  lastName: String
 }
 
 export interface EntryUpsertWithWhereUniqueWithoutAuthorInput {
@@ -929,7 +1007,8 @@ export interface UserWhereUniqueInput {
 export interface UserCreateInput {
   email: String
   password: String
-  name: String
+  firstName: String
+  lastName: String
   entries?: EntryCreateManyWithoutAuthorInput
 }
 
@@ -946,13 +1025,15 @@ export interface UserSubscriptionWhereInput {
 export interface UserUpdateWithoutEntriesDataInput {
   email?: String
   password?: String
-  name?: String
+  firstName?: String
+  lastName?: String
 }
 
 export interface UserUpdateInput {
   email?: String
   password?: String
-  name?: String
+  firstName?: String
+  lastName?: String
   entries?: EntryUpdateManyWithoutAuthorInput
 }
 
@@ -1025,7 +1106,8 @@ export interface User extends Node {
   id: ID_Output
   email: String
   password: String
-  name: String
+  firstName: String
+  lastName: String
   entries?: Entry[]
 }
 
@@ -1055,7 +1137,8 @@ export interface UserPreviousValues {
   id: ID_Output
   email: String
   password: String
-  name: String
+  firstName: String
+  lastName: String
 }
 
 /*
