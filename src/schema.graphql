@@ -44,7 +44,12 @@ type Query {
 }
 
 type Mutation {
-  signup(email: String!, password: String!, name: String!): AuthPayload!
+  signup(
+    email: String!
+    password: String!
+    firstName: String!
+    lastName: String!
+  ): AuthPayload!
   login(email: String!, password: String!): AuthPayload!
 
   createEntry(data: EntryCreateInput!): Entry!
@@ -59,6 +64,7 @@ type User {
   # don't show password!
   id: ID!
   email: String!
-  name: String!
+  firstName: String!
+  lastName: String!
   entries: [Entry!]!
 }

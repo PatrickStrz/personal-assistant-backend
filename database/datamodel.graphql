@@ -15,6 +15,7 @@ type Entry {
 }
 
 enum EntryStatus {
+  LISTED
   IN_PROGRESS
   COMPLETED
   ARCHIVED
