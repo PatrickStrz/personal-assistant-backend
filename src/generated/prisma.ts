@@ -98,6 +98,7 @@ type EntryPreviousValues {
 }
 
 enum EntryStatus {
+  LISTED
   IN_PROGRESS
   COMPLETED
   ARCHIVED
@@ -823,6 +824,7 @@ export type UserOrderByInput =
   'createdAt_DESC'
 
 export type EntryStatus = 
+  'LISTED' |
   'IN_PROGRESS' |
   'COMPLETED' |
   'ARCHIVED'
