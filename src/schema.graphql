@@ -52,7 +52,29 @@ type Mutation {
   ): AuthPayload!
   login(email: String!, password: String!): AuthPayload!
 
+  # createUser(data: UserCreateInput!): User!
   createEntry(data: EntryCreateInput!): Entry!
+  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  updateEntry(data: EntryUpdateInput!, where: EntryWhereUniqueInput!): Entry
+  deleteUser(where: UserWhereUniqueInput!): User
+  deleteEntry(where: EntryWhereUniqueInput!): Entry
+  upsertUser(
+    where: UserWhereUniqueInput!
+    create: UserCreateInput!
+    update: UserUpdateInput!
+  ): User!
+  upsertEntry(
+    where: EntryWhereUniqueInput!
+    create: EntryCreateInput!
+    update: EntryUpdateInput!
+  ): Entry!
+  updateManyUsers(data: UserUpdateInput!, where: UserWhereInput): BatchPayload!
+  updateManyEntries(
+    data: EntryUpdateInput!
+    where: EntryWhereInput
+  ): BatchPayload!
+  deleteManyUsers(where: UserWhereInput): BatchPayload!
+  deleteManyEntries(where: EntryWhereInput): BatchPayload!
 }
 
 type AuthPayload {
