@@ -9,6 +9,8 @@ type User {
 
 type Entry {
   id: ID! @unique
+  createdAt: DateTime!
+  updatedAt: DateTime!
   text: String!
   author: User! @relation(name: "Entries")
   status: EntryStatus!
