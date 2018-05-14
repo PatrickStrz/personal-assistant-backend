@@ -4,6 +4,8 @@ import { GraphQLResolveInfo } from 'graphql'
 export const typeDefs = `
 type Entry implements Node {
   id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   text: String!
   author(where: UserWhereInput): User!
   status: EntryStatus!
@@ -32,6 +34,8 @@ type BatchPayload {
   """
   count: Long!
 }
+
+scalar DateTime
 
 """
 A connection to a list of items.
@@ -81,18 +85,20 @@ type EntryEdge {
 enum EntryOrderByInput {
   id_ASC
   id_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
   text_ASC
   text_DESC
   status_ASC
   status_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  createdAt_ASC
-  createdAt_DESC
 }
 
 type EntryPreviousValues {
   id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   text: String!
   status: EntryStatus!
 }
@@ -232,6 +238,64 @@ input EntryWhereInput {
   All values not ending with the given string.
   """
   id_not_ends_with: ID
+  createdAt: DateTime
+  """
+  All values that are not equal to given value.
+  """
+  createdAt_not: DateTime
+  """
+  All values that are contained in given list.
+  """
+  createdAt_in: [DateTime!]
+  """
+  All values that are not contained in given list.
+  """
+  createdAt_not_in: [DateTime!]
+  """
+  All values less than the given value.
+  """
+  createdAt_lt: DateTime
+  """
+  All values less than or equal the given value.
+  """
+  createdAt_lte: DateTime
+  """
+  All values greater than the given value.
+  """
+  createdAt_gt: DateTime
+  """
+  All values greater than or equal the given value.
+  """
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  """
+  All values that are not equal to given value.
+  """
+  updatedAt_not: DateTime
+  """
+  All values that are contained in given list.
+  """
+  updatedAt_in: [DateTime!]
+  """
+  All values that are not contained in given list.
+  """
+  updatedAt_not_in: [DateTime!]
+  """
+  All values less than the given value.
+  """
+  updatedAt_lt: DateTime
+  """
+  All values less than or equal the given value.
+  """
+  updatedAt_lte: DateTime
+  """
+  All values greater than the given value.
+  """
+  updatedAt_gt: DateTime
+  """
+  All values greater than or equal the given value.
+  """
+  updatedAt_gte: DateTime
   text: String
   """
   All values that are not equal to given value.
@@ -807,6 +871,12 @@ type Subscription {
 }
 `
 
+export type EntryStatus = 
+  'LISTED' |
+  'IN_PROGRESS' |
+  'COMPLETED' |
+  'ARCHIVED'
+
 export type UserOrderByInput = 
   'id_ASC' |
   'id_DESC' |
@@ -823,23 +893,17 @@ export type UserOrderByInput =
   'createdAt_ASC' |
   'createdAt_DESC'
 
-export type EntryStatus = 
-  'LISTED' |
-  'IN_PROGRESS' |
-  'COMPLETED' |
-  'ARCHIVED'
-
 export type EntryOrderByInput = 
   'id_ASC' |
   'id_DESC' |
+  'createdAt_ASC' |
+  'createdAt_DESC' |
+  'updatedAt_ASC' |
+  'updatedAt_DESC' |
   'text_ASC' |
   'text_DESC' |
   'status_ASC' |
-  'status_DESC' |
-  'updatedAt_ASC' |
-  'updatedAt_DESC' |
-  'createdAt_ASC' |
-  'createdAt_DESC'
+  'status_DESC'
 
 export type MutationType = 
   'CREATED' |
@@ -958,6 +1022,86 @@ export interface EntryUpdateWithoutAuthorDataInput {
   status?: EntryStatus
 }
 
+export interface UserSubscriptionWhereInput {
+  AND?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput
+  OR?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput
+  mutation_in?: MutationType[] | MutationType
+  updatedFields_contains?: String
+  updatedFields_contains_every?: String[] | String
+  updatedFields_contains_some?: String[] | String
+  node?: UserWhereInput
+}
+
+export interface EntryUpdateWithWhereUniqueWithoutAuthorInput {
+  where: EntryWhereUniqueInput
+  data: EntryUpdateWithoutAuthorDataInput
+}
+
+export interface EntryWhereUniqueInput {
+  id?: ID_Input
+}
+
+export interface EntryUpdateManyWithoutAuthorInput {
+  create?: EntryCreateWithoutAuthorInput[] | EntryCreateWithoutAuthorInput
+  connect?: EntryWhereUniqueInput[] | EntryWhereUniqueInput
+  disconnect?: EntryWhereUniqueInput[] | EntryWhereUniqueInput
+  delete?: EntryWhereUniqueInput[] | EntryWhereUniqueInput
+  update?: EntryUpdateWithWhereUniqueWithoutAuthorInput[] | EntryUpdateWithWhereUniqueWithoutAuthorInput
+  upsert?: EntryUpsertWithWhereUniqueWithoutAuthorInput[] | EntryUpsertWithWhereUniqueWithoutAuthorInput
+}
+
+export interface UserUpdateWithoutEntriesDataInput {
+  email?: String
+  password?: String
+  firstName?: String
+  lastName?: String
+}
+
+export interface EntryCreateInput {
+  text: String
+  status: EntryStatus
+  author: UserCreateOneWithoutEntriesInput
+}
+
+export interface EntryCreateWithoutAuthorInput {
+  text: String
+  status: EntryStatus
+}
+
+export interface UserUpdateInput {
+  email?: String
+  password?: String
+  firstName?: String
+  lastName?: String
+  entries?: EntryUpdateManyWithoutAuthorInput
+}
+
+export interface UserCreateInput {
+  email: String
+  password: String
+  firstName: String
+  lastName: String
+  entries?: EntryCreateManyWithoutAuthorInput
+}
+
+export interface UserUpdateOneWithoutEntriesInput {
+  create?: UserCreateWithoutEntriesInput
+  connect?: UserWhereUniqueInput
+  delete?: Boolean
+  update?: UserUpdateWithoutEntriesDataInput
+  upsert?: UserUpsertWithoutEntriesInput
+}
+
+export interface UserUpsertWithoutEntriesInput {
+  update: UserUpdateWithoutEntriesDataInput
+  create: UserCreateWithoutEntriesInput
+}
+
+export interface UserWhereUniqueInput {
+  id?: ID_Input
+  email?: String
+}
+
 export interface EntryWhereInput {
   AND?: EntryWhereInput[] | EntryWhereInput
   OR?: EntryWhereInput[] | EntryWhereInput
@@ -975,6 +1119,22 @@ export interface EntryWhereInput {
   id_not_starts_with?: ID_Input
   id_ends_with?: ID_Input
   id_not_ends_with?: ID_Input
+  createdAt?: DateTime
+  createdAt_not?: DateTime
+  createdAt_in?: DateTime[] | DateTime
+  createdAt_not_in?: DateTime[] | DateTime
+  createdAt_lt?: DateTime
+  createdAt_lte?: DateTime
+  createdAt_gt?: DateTime
+  createdAt_gte?: DateTime
+  updatedAt?: DateTime
+  updatedAt_not?: DateTime
+  updatedAt_in?: DateTime[] | DateTime
+  updatedAt_not_in?: DateTime[] | DateTime
+  updatedAt_lt?: DateTime
+  updatedAt_lte?: DateTime
+  updatedAt_gt?: DateTime
+  updatedAt_gte?: DateTime
   text?: String
   text_not?: String
   text_in?: String[] | String
@@ -994,86 +1154,6 @@ export interface EntryWhereInput {
   status_in?: EntryStatus[] | EntryStatus
   status_not_in?: EntryStatus[] | EntryStatus
   author?: UserWhereInput
-}
-
-export interface EntryUpdateWithWhereUniqueWithoutAuthorInput {
-  where: EntryWhereUniqueInput
-  data: EntryUpdateWithoutAuthorDataInput
-}
-
-export interface UserWhereUniqueInput {
-  id?: ID_Input
-  email?: String
-}
-
-export interface UserCreateInput {
-  email: String
-  password: String
-  firstName: String
-  lastName: String
-  entries?: EntryCreateManyWithoutAuthorInput
-}
-
-export interface UserSubscriptionWhereInput {
-  AND?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput
-  OR?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput
-  mutation_in?: MutationType[] | MutationType
-  updatedFields_contains?: String
-  updatedFields_contains_every?: String[] | String
-  updatedFields_contains_some?: String[] | String
-  node?: UserWhereInput
-}
-
-export interface UserUpdateWithoutEntriesDataInput {
-  email?: String
-  password?: String
-  firstName?: String
-  lastName?: String
-}
-
-export interface UserUpdateInput {
-  email?: String
-  password?: String
-  firstName?: String
-  lastName?: String
-  entries?: EntryUpdateManyWithoutAuthorInput
-}
-
-export interface EntryCreateInput {
-  text: String
-  status: EntryStatus
-  author: UserCreateOneWithoutEntriesInput
-}
-
-export interface EntryCreateWithoutAuthorInput {
-  text: String
-  status: EntryStatus
-}
-
-export interface EntryUpdateManyWithoutAuthorInput {
-  create?: EntryCreateWithoutAuthorInput[] | EntryCreateWithoutAuthorInput
-  connect?: EntryWhereUniqueInput[] | EntryWhereUniqueInput
-  disconnect?: EntryWhereUniqueInput[] | EntryWhereUniqueInput
-  delete?: EntryWhereUniqueInput[] | EntryWhereUniqueInput
-  update?: EntryUpdateWithWhereUniqueWithoutAuthorInput[] | EntryUpdateWithWhereUniqueWithoutAuthorInput
-  upsert?: EntryUpsertWithWhereUniqueWithoutAuthorInput[] | EntryUpsertWithWhereUniqueWithoutAuthorInput
-}
-
-export interface UserUpdateOneWithoutEntriesInput {
-  create?: UserCreateWithoutEntriesInput
-  connect?: UserWhereUniqueInput
-  delete?: Boolean
-  update?: UserUpdateWithoutEntriesDataInput
-  upsert?: UserUpsertWithoutEntriesInput
-}
-
-export interface UserUpsertWithoutEntriesInput {
-  update: UserUpdateWithoutEntriesDataInput
-  create: UserCreateWithoutEntriesInput
-}
-
-export interface EntryWhereUniqueInput {
-  id?: ID_Input
 }
 
 export interface EntrySubscriptionWhereInput {
@@ -1096,21 +1176,24 @@ export interface Node {
 
 export interface EntryPreviousValues {
   id: ID_Output
+  createdAt: DateTime
+  updatedAt: DateTime
   text: String
   status: EntryStatus
 }
 
-export interface BatchPayload {
-  count: Long
+export interface EntrySubscriptionPayload {
+  mutation: MutationType
+  node?: Entry
+  updatedFields?: String[]
+  previousValues?: EntryPreviousValues
 }
 
-export interface User extends Node {
-  id: ID_Output
-  email: String
-  password: String
-  firstName: String
-  lastName: String
-  entries?: Entry[]
+export interface UserSubscriptionPayload {
+  mutation: MutationType
+  node?: User
+  updatedFields?: String[]
+  previousValues?: UserPreviousValues
 }
 
 /*
@@ -1122,25 +1205,6 @@ export interface PageInfo {
   hasPreviousPage: Boolean
   startCursor?: String
   endCursor?: String
-}
-
-export interface UserSubscriptionPayload {
-  mutation: MutationType
-  node?: User
-  updatedFields?: String[]
-  previousValues?: UserPreviousValues
-}
-
-export interface AggregateEntry {
-  count: Int
-}
-
-export interface UserPreviousValues {
-  id: ID_Output
-  email: String
-  password: String
-  firstName: String
-  lastName: String
 }
 
 /*
@@ -1164,9 +1228,32 @@ export interface EntryEdge {
 
 export interface Entry extends Node {
   id: ID_Output
+  createdAt: DateTime
+  updatedAt: DateTime
   text: String
   author: User
   status: EntryStatus
+}
+
+export interface UserPreviousValues {
+  id: ID_Output
+  email: String
+  password: String
+  firstName: String
+  lastName: String
+}
+
+export interface BatchPayload {
+  count: Long
+}
+
+export interface User extends Node {
+  id: ID_Output
+  email: String
+  password: String
+  firstName: String
+  lastName: String
+  entries?: Entry[]
 }
 
 /*
@@ -1179,11 +1266,8 @@ export interface EntryConnection {
   aggregate: AggregateEntry
 }
 
-export interface EntrySubscriptionPayload {
-  mutation: MutationType
-  node?: Entry
-  updatedFields?: String[]
-  previousValues?: EntryPreviousValues
+export interface AggregateEntry {
+  count: Int
 }
 
 /*
@@ -1199,11 +1283,7 @@ export interface AggregateUser {
   count: Int
 }
 
-/*
-The 'Long' scalar type represents non-fractional signed whole numeric values.
-Long can represent values between -(2^63) and 2^63 - 1.
-*/
-export type Long = string
+export type DateTime = string
 
 /*
 The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1. 
@@ -1220,6 +1300,12 @@ The `ID` scalar type represents a unique identifier, often used to refetch an ob
 */
 export type ID_Input = string | number
 export type ID_Output = string
+
+/*
+The 'Long' scalar type represents non-fractional signed whole numeric values.
+Long can represent values between -(2^63) and 2^63 - 1.
+*/
+export type Long = string
 
 /*
 The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
